@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 
-module top_TB();
+module Freq_Divider_TB();
   reg clk_in, nreset;
   wire clk_out;
   
@@ -24,7 +24,7 @@ module top_TB();
   initial
     begin
       $dumpfile ("frequencydiv.vcd");
-      $dumpvars (0,top_TB);
+      $dumpvars (0,Freq_Divider_TB);
     end
 
 endmodule
