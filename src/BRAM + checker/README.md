@@ -1,4 +1,4 @@
-# Verilog BRAM (Single Dual Port) Readme
+# Verilog BRAM (Single Port) Readme
 BRAM is created using Core Generator and initialized through a .coe file.
 
 I have created a controller for the BRAM and a debouncer for a button.
