@@ -1,0 +1,64 @@
+             ;*******************************************************************************
+             ; Company:      Escuela Colombiana de Ingeneria Julio Garavito - Grupo SEDA
+             ; Engineer:     Javier Soto
+             ; Create Date:  02/10/2015
+             ; Project Name: tutorialSEDA_PB_led
+             ; Description:  Programa para PicoBlaze que enciende y apaga un led continuamente.
+             ;               Incluye una entrada como control de pausa (switch),
+             ;               y una salida que corresonde con el led (secuencia on-off).
+             ;*******************************************************************************
+             ;Descripción directiva VHDL
+             ;Argumento 1: "ROM_form.vhd", plantilla para creación de la memoria de programa
+             ;Argumento 2: "prog_rom.vhd", nombre del archivo que creará (memoria de programa)
+             ;Argumento 3: "prog_rom", nombre que le pone a la entidad del nuevo archivo creado
+             ;VHDL "ROM_form.vhd", "prog_rom.vhd", "prog_rom"
+             ;*******************************************************************************
+             ;Definiciones
+             ;*******************************************************************************
+             CONSTANT PORT_LED, 01
+             CONSTANT LEDs, 01        ;Puerto de salida LEDS_H
+             NAMEREG s0, led_reg
+             NAMEREG s1, pausa_reg
+             NAMEREG sF, counter_ret1
+             NAMEREG sE, counter_ret2
+             NAMEREG sD, counter_ret3
+             ;*******************************************************************************
+             ;Directivas del pBlazeIDE para simulación de puertos
+             ;*******************************************************************************
+             ;LEDs           DSOUT $01, "output_values.txt"   ;escribir datos en archivo
+             ;OUTPUT LEDs, $01   ;crea una salida llamada LEDs asociado al ID_PORT 01
+             ;SWITCHES       DSIN  $00   ;crea una entrada llamada SWITCHES asociado al ID_PORT 00
+             ;*******************************************************************************
+             ;Programa
+             ;*******************************************************************************
+             ADDRESS 000              ;dirección de la primera instrucción
+      start: 
+             DISABLE INTERRUPT        ;deshabilita interrupciones
+             LOAD led_reg, 01         ;inicializa el valor de led_reg(s0) en 01h.
+    mostrar: 
+             OUTPUT led_reg, PORT_LED ;escribe el valor de led_reg(s0) por PORT_LED(01h)
+             CALL delay_500ms         ;llama a subrutina de retardo de 500ms
+      pausa: 
+             INPUT pausa_reg, 00      ;lee puerto de entrada (00h) y lo guarda en pausa_reg(s1)
+             TEST pausa_reg, 01       ;verifica el bit 0 de pausa_reg(s1): pausa_reg AND 01h
+             JUMP NZ, pausa           ;salta a pausa si pausa_reg(0) es 1
+             XOR led_reg, 01          ;complementa el valor del bit 0 de led_reg(s0)
+             JUMP mostrar             ;salta a la etiqueta mostrar
+delay_500ms: 
+             LOAD counter_ret1, 00    ;inicializa registro counter_ret1(sF) en 00h
+             LOAD counter_ret2, 00    ;inicializa registro counter_ret1(sE) en 00h
+             LOAD counter_ret3, 20    ;inicializa registro counter_ret1(sD) en 20h
+delay_loop1: 
+             LOAD s2, s2              ;equivalente a NOP (No operation)
+             LOAD s2, s2              ;equivalente a nop
+             LOAD s2, s2              ;equivalente a nop
+             LOAD s2, s2              ;equivalente a nop
+             SUB counter_ret1, 01     ;decrementa counter_ret1 en 1
+             JUMP NZ, delay_loop1     ;salta si counter_ret1 no ha llegado a 00
+             ;
+             SUB counter_ret2, 01     ;decrementa counter_ret2 en 1
+             JUMP NZ, delay_loop1     ;salta si counter_ret2 no ha llegado a 00
+             ;
+             SUB counter_ret3, 01     ;decrementa counter_ret2 en 1
+             JUMP NZ, delay_loop1     ;salta si counter_ret3 no ha llegado a 00
+             RETURN                   ;retorno de subrutina

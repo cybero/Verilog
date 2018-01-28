@@ -1,0 +1,62 @@
+;*******************************************************************************
+; Company:      Escuela Colombiana de Ingeneria Julio Garavito - Grupo SEDA
+; Engineer:     Javier Soto
+; Create Date:  02/10/2015
+; Project Name: tutorialSEDA_PB_led
+; Description:  Programa para PicoBlaze que enciende y apaga un led continuamente.
+;               Incluye una entrada como control de pausa (switch),
+;               y una salida que corresonde con el led (secuencia on-off).
+;*******************************************************************************
+;Descripción directiva VHDL
+;Argumento 1: "ROM_form.vhd", plantilla para creación de la memoria de programa
+;Argumento 2: "prog_rom.vhd", nombre del archivo que creará (memoria de programa)
+;Argumento 3: "prog_rom", nombre que le pone a la entidad del nuevo archivo creado
+VHDL "ROM_form.vhd", "prog_rom.vhd", "prog_rom"
+;*******************************************************************************
+;Definiciones
+;*******************************************************************************
+PORT_LED       EQU      01
+led_reg        EQU      s0
+pausa_reg      EQU      s1
+counter_ret1   EQU      sF
+counter_ret2   EQU      sE
+counter_ret3   EQU      sD
+;*******************************************************************************
+;Directivas del pBlazeIDE para simulación de puertos
+;*******************************************************************************
+;LEDs           DSOUT $01, "output_values.txt"   ;escribir datos en archivo
+LEDs           DSOUT $01   ;crea una salida llamada LEDs asociado al ID_PORT 01
+SWITCHES       DSIN  $00   ;crea una entrada llamada SWITCHES asociado al ID_PORT 00
+;*******************************************************************************
+;Programa
+;*******************************************************************************
+            ORG $000                   ;dirección de la primera instrucción
+
+start:
+LOAD s9, $00
+
+drive_wave:
+OUT s9, $02       ; upisujemo s9 registra u userbit
+LOAD S2, $0F         ; inicijalna vrednost S2
+
+loop2:          LOAD S1, $FF         ; inicijalna vrednost S1
+
+loop1:          LOAD s0, $FF         ; inicijalna vrednost S0
+
+loop0:          SUB s0, $01
+
+                JUMP NZ, loop0
+
+                SUB s1, $01
+
+                JUMP NZ, loop1
+
+                SUB s2, $01
+
+                JUMP NZ, loop2
+
+                ;
+
+                XOR s9, $FF          ;toglujemo registar
+
+                JUMP drive_wave

@@ -1,0 +1,29 @@
+start:             LOAD s9, 00                   
+
+drive_wave: OUTPUT s9, 02           ; write s9 register to userbit
+
+ 
+                    LOAD S2, 0F               ; S2 initial value
+
+loop2:          LOAD S1, FF               ; S1 initial value
+
+loop1:          LOAD s0, FF               ; S0 initial value
+
+loop0:          SUB s0, 01         
+
+                    JUMP NZ, loop0
+
+                    SUB s1, 01
+
+                    JUMP NZ, loop1
+
+                    SUB s2, 01
+
+                    JUMP NZ, loop2
+
+                   ;
+
+                    XOR s9, FF                    ;toggle register
+
+                    JUMP drive_wave             
+

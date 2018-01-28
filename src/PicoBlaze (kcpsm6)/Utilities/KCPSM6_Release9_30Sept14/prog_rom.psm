@@ -1,0 +1,61 @@
+;*******************************************************************************
+; Company:      Escuela Colombiana de Ingeniería Julio Garavito - Grupo SEDA
+; Engineer:     Javier Soto
+; Create Date:  02/10/2015
+; Project Name: tutorialSEDA_PB_leds
+; Description:  Programa para PicoBlaze (KCPSM6) que enciende y apaga leds
+;               continuamente. Incluye entradas como control de pausa (switches),
+;               entradas para control de velocidad de conmutación (switches)
+;               y salidas conectadas a leds (secuencia on-off, tarjeta NEXYS4-DDR).
+;*******************************************************************************
+;Definiciones
+;*******************************************************************************
+VHDL "ROM_form.vhd", "prog_rom.vhd", "prog_rom"
+
+CONSTANT    OUTP_LEDS_H,01    ;Puerto de salida LEDS_H
+CONSTANT    OUTP_LEDS_L,02    ;Puerto de salida LEDS_L
+CONSTANT    INP_SW_PAUSA,00   ;Puerto de entrada SWITCHES PAUSA
+CONSTANT    INP_SW_SPEED,01   ;Puerto de entrada SWITCHES SPEED
+NAMEREG     s0,leds_reg_H     ;Registro leds_reg_H
+NAMEREG     s1,leds_reg_L     ;Registro leds_reg_L
+NAMEREG     s2,cont_ret1      ;Registro para función de retardo
+NAMEREG     s3,cont_ret2      ;Registro para función de retardo
+NAMEREG     s4,cont_ret3      ;Registro para función de retardo
+;*******************************************************************************
+;Programa
+;*******************************************************************************
+      ADDRESS 000                      ;dirección de la primera instrucción
+start:
+      DISABLE INTERRUPT                ;deshabilita interrupciones
+      LOAD     leds_reg_H,00           ;inicializa el valor de leds_reg_H(s0) en 00h.
+      LOAD     leds_reg_L,FF           ;inicializa el valor de leds_reg_L(s1) en FFh.
+mostrar:
+      OUTPUT   leds_reg_H,OUTP_LEDS_H  ;escribe leds_reg_H(s0) en puerto OUTP_LEDS_H(01h)
+      OUTPUT   leds_reg_L,OUTP_LEDS_L  ;escribe leds_reg_L(s0) en puerto OUTP_LEDS_L(02h)
+      CALL     delay                   ;llama a subrutina de retardo
+pausa:
+      INPUT    s5,INP_SW_PAUSA         ;lee puerto INP_SW_PAUSA(00h) y lo guarda en s5
+      TEST     s5,FF                   ;verifica si algún bit de s5 esta en 1: s5 AND FFh
+      JUMP     NZ,pausa                ;salta a pausa si Z = 0
+      XOR      leds_reg_H,FF           ;complementa el valor del registro leds_reg_H(s0)
+      XOR      leds_reg_L,FF           ;complementa el valor del registro leds_reg_L(s1)
+      JUMP     mostrar                 ;salta a la etiqueta mostrar
+delay:
+      LOAD     cont_ret1,00            ;inicializa registro cont_ret1(s2) en 00h
+      LOAD     cont_ret2,00            ;inicializa registro cont_ret2(s3) en 00h
+      INPUT    cont_ret3,INP_SW_SPEED  ;escribe en cont_ret3 el puerto INP_SW_SPEED(01h)
+      ADD      cont_ret3,01            ;cont_ret3=00h mínimo retardo, FFh máximo
+loop:
+      LOAD     s5,s5                   ;equivalente a NOP (No operation)
+      LOAD     s5,s5                   ;equivalente a nop
+      LOAD     s5,s5                   ;equivalente a nop
+      LOAD     s5,s5                   ;equivalente a nop
+      SUB      cont_ret1,01            ;decrementa cont_ret1 en 1
+      JUMP     NZ,loop                 ;salta a loop si cont_ret1 =/ 00
+                                       ;
+      SUB      cont_ret2,01            ;decrementa cont_ret2 en 1
+      JUMP     NZ,loop                 ;salta a loop si cont_ret2 =/ 00
+                                       ;
+      SUB      cont_ret3,01            ;decrementa cont_ret3 en 1
+      JUMP     NZ,loop                 ;salta a loop si cont_ret3 =/ 00
+      RETURN                           ;retorno de subrutina
