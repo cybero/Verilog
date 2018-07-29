@@ -1,0 +1,123 @@
+`timescale 1ns / 1ps
+
+////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer:
+//
+// Create Date:   13:57:14 04/16/2018
+// Design Name:   top
+// Module Name:   C:/Users/PC-i7/Desktop/DSP/circuitos/conv2d/version_3/version_3_1/max_pooling_regiones/TB_top1.v
+// Project Name:  max_pooling_regiones
+// Target Device:  
+// Tool versions:  
+// Description: 
+//
+// Verilog Test Fixture created by ISE for module: top
+//
+// Dependencies:
+// 
+// Revision:
+// Revision 0.01 - File Created
+// Additional Comments:
+// 
+////////////////////////////////////////////////////////////////////////////////
+
+module TB_top1;
+
+	// Inputs
+	reg clk;
+	reg reset;
+	reg serial_in;
+
+	// Outputs
+	wire data_out;
+
+	// Instantiate the Unit Under Test (UUT)
+	top uut (
+		.clk(clk), 
+		.reset(reset), 
+		.serial_in(serial_in), 
+		.data_out(data_out)
+	);
+	
+	  // Testbench uses a 10 MHz clock
+  // Want to interface to 115200 baud UART
+  // 10000000 / 115200 = 87 Clocks Per Bit.
+  parameter c_CLOCK_PERIOD_NS = 100;
+  parameter c_CLKS_PER_BIT    = 87;
+  //parameter c_BIT_PERIOD      = 8600;
+  parameter c_BIT_PERIOD      = 8000;
+
+
+  task UART_WRITE_BYTE;
+    input signed [7:0] i_Data;
+    integer     ii;
+    begin
+      // Send Start Bit
+      serial_in <= 1'b0;
+      #(c_BIT_PERIOD);
+      // #1000;
+      // Send Data Byte
+      for (ii=0; ii<8; ii=ii+1)
+        begin
+          serial_in <= i_Data[ii];
+          #(c_BIT_PERIOD);
+        end
+      // Send Stop Bit
+      serial_in <= 1'b1;
+      #(c_BIT_PERIOD);
+    end
+  endtask // UART_WRITE_BYTE
+
+	initial begin
+		// Initialize Inputs
+		clk = 0;
+		reset = 1;
+		serial_in = 0;
+
+		// Wait 100 ns for global reset to finish
+		#100;
+        		reset = 0;
+
+		// Add stimulus here
+		
+		
+		/*1*/			UART_WRITE_BYTE(-7);	
+    #100;
+    /*2*/			UART_WRITE_BYTE(14);	
+    #100;
+    /*3*/			UART_WRITE_BYTE(-2);	
+    #100;
+    /*4*/			UART_WRITE_BYTE(-5);	
+    #100;
+    /*5*/			UART_WRITE_BYTE(3);	
+    #100;
+    /*6*/			UART_WRITE_BYTE(0);
+    #100;
+    /*7*/			UART_WRITE_BYTE(-9);	
+    #100;
+    /*8*/			UART_WRITE_BYTE(-12);	
+    #100;
+    /*9*/			UART_WRITE_BYTE(24);	
+    #100;
+    /*10*/		UART_WRITE_BYTE(-1);	
+    #100;
+    /*11*/		UART_WRITE_BYTE(-6);	
+    #100;
+    /*12*/		UART_WRITE_BYTE(-8);	
+    #100;
+    /*13*/		UART_WRITE_BYTE(2);	
+    #100;
+    /*14*/		UART_WRITE_BYTE(-16);	
+    #100;
+    /*15*/		UART_WRITE_BYTE(-4);
+    #100;
+	 /*16*/		UART_WRITE_BYTE(-3);
+    #100;
+
+	end
+	
+	  always #(c_CLOCK_PERIOD_NS/2) clk <= !clk;
+      
+endmodule
+
