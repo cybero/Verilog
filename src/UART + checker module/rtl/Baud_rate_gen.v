@@ -2,8 +2,8 @@
 
 module Baud_rate_gen
   #(
-    //M=5	//	mod-M. M=clock freq/(16 * baud rate)   <---  10 MhZ (use this in test bench)
-    M=208	//	mod-M. M=clock freq/(16 * baud rate)
+    //M=5	//	mod-M. M=clock freq/(16 * baud rate)   <---  10 Mhz (use this in test bench)
+    M=208	//	mod-M. M=clock freq/(16 * baud rate)   <---  32 Mhz
   )
   (
     input wire clk,
