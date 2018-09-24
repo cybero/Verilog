@@ -46,8 +46,8 @@ module uart
     .s_tick(tick), 
     .tx_start(tx_start), 
     .tx_done_tick(tx_done_tick), 
-    .data_out(data_out),
-    .tx_ready(tx_ready)
+    .data_out(data_out)
+//    .tx_ready(tx_ready)
 
   );
 
